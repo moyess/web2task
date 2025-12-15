@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>提交任务 - 滴答清单协作</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-card">
+      <div class="header">
+        <h1>提交工作任务</h1>
+        <button id="reauthBtn" class="reauth-btn" title="重新授权">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div id="authWarning" class="warning" style="display: none;">
+        <p>未检测到授权信息，请先完成授权</p>
+        <a href="/" class="link-button">前往授权</a>
+      </div>
+
+      <form id="taskForm">
+        <div class="form-group">
+          <label for="title">
+            任务名称 <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="例如：UEBA增加因私查询功能"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="priority">优先级</label>
+          <select id="priority" name="priority">
+            <option value="0">无优先级</option>
+            <option value="1">低</option>
+            <option value="3">中</option>
+            <option value="5" selected>高</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dueDate">排期日期</label>
+          <input
+            type="date"
+            id="dueDate"
+            name="dueDate"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="content">任务描述</label>
+          <textarea
+            id="content"
+            name="content"
+            rows="4"
+            placeholder="任务的详细描述（可选）"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="submit-button" id="submitBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          提交任务
+        </button>
+      </form>
+
+      <div id="message" class="message"></div>
+
+      <div class="footer-info">
+        <p>提交的任务将自动添加到滴答清单中</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
