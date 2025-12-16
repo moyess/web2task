@@ -1,204 +1,209 @@
-// 检查授权状态
+/**
+ * Task Submission System
+ * Dida365 Integration
+ */
+
+// Configuration
+const CONFIG = {
+  API: {
+    AUTH_STATUS: '/api/auth-status',
+    CREATE_TASK: '/api/create-task',
+    REAUTH: '/api/reauth'
+  },
+  MESSAGE_DURATION: 5000
+};
+
+// DOM Elements
+const elements = {
+  authWarning: document.getElementById('authWarning'),
+  taskForm: document.getElementById('taskForm'),
+  submitBtn: document.getElementById('submitBtn'),
+  reauthBtn: document.getElementById('reauthBtn'),
+  messageBox: document.getElementById('message'),
+  title: document.getElementById('title'),
+  priority: document.getElementById('priority'),
+  dueDate: document.getElementById('dueDate'),
+  content: document.getElementById('content')
+};
+
+/**
+ * Check authorization status
+ */
 async function checkAuthStatus() {
   try {
-    const response = await fetch('/api/auth-status');
+    const response = await fetch(CONFIG.API.AUTH_STATUS);
     const data = await response.json();
 
-    if (!data.authorized) {
-      document.getElementById('authWarning').style.display = 'block';
-      document.getElementById('taskForm').style.display = 'none';
+    if (!data.authorized && elements.authWarning) {
+      elements.authWarning.style.display = 'block';
+      if (elements.taskForm) {
+        elements.taskForm.style.display = 'none';
+      }
     }
   } catch (error) {
-    console.error('检查授权状态失败:', error);
+    console.error('Authorization check failed:', error);
   }
 }
 
-// 显示消息
-function showMessage(message, type = 'success') {
-  const messageDiv = document.getElementById('message');
-  messageDiv.textContent = message;
-  messageDiv.className = `message ${type} show`;
+/**
+ * Display message to user
+ */
+function showMessage(text, type = 'success') {
+  if (!elements.messageBox) return;
 
-  // 添加震动效果（如果设备支持）
-  if ('vibrate' in navigator) {
-    navigator.vibrate(type === 'success' ? 100 : [100, 50, 100]);
-  }
+  elements.messageBox.textContent = text;
+  elements.messageBox.className = `message-box ${type} show`;
 
   setTimeout(() => {
-    messageDiv.classList.remove('show');
-  }, 5000);
+    elements.messageBox.classList.remove('show');
+  }, CONFIG.MESSAGE_DURATION);
 }
 
-// 设置默认日期为今天
+/**
+ * Set default date to today
+ */
 function setDefaultDate() {
-  const dueDateInput = document.getElementById('dueDate');
-  const today = new Date();
+  if (!elements.dueDate) return;
 
+  const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
 
-  dueDateInput.value = `${year}-${month}-${day}`;
+  elements.dueDate.value = `${year}-${month}-${day}`;
 }
 
-// 添加输入验证和视觉反馈
-function setupInputValidation() {
-  const titleInput = document.getElementById('title');
+/**
+ * Handle form submission
+ */
+async function handleSubmit(event) {
+  event.preventDefault();
 
-  titleInput.addEventListener('input', (e) => {
-    const value = e.target.value.trim();
-    if (value.length > 0) {
-      e.target.style.borderColor = 'var(--success-color)';
-    } else {
-      e.target.style.borderColor = '';
-    }
-  });
-}
+  if (!elements.submitBtn) return;
 
-// 处理表单提交
-document.getElementById('taskForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const submitBtn = document.getElementById('submitBtn');
-  const originalHTML = submitBtn.innerHTML;
-
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = `
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;">
-      <circle cx="12" cy="12" r="10"></circle>
-      <path d="M12 6v6l4 2"></path>
-    </svg>
-    提交中...
-  `;
+  const originalHTML = elements.submitBtn.innerHTML;
+  elements.submitBtn.disabled = true;
+  elements.submitBtn.innerHTML = '<span>Submitting...</span>';
 
   const formData = {
-    title: document.getElementById('title').value.trim(),
-    priority: document.getElementById('priority').value,
-    dueDate: document.getElementById('dueDate').value,
-    content: document.getElementById('content').value.trim()
+    title: elements.title.value.trim(),
+    priority: elements.priority.value,
+    dueDate: elements.dueDate.value,
+    content: elements.content.value.trim()
   };
 
   try {
-    const response = await fetch('/api/create-task', {
+    const response = await fetch(CONFIG.API.CREATE_TASK, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
     });
 
     const data = await response.json();
 
     if (data.success) {
-      showMessage('✓ 任务创建成功！已添加到滴答清单', 'success');
-
-      // 添加成功动画效果
-      const form = document.getElementById('taskForm');
-      form.style.transform = 'scale(0.98)';
-      setTimeout(() => {
-        form.style.transform = 'scale(1)';
-      }, 200);
-
-      // 重置表单
-      document.getElementById('taskForm').reset();
-      setDefaultDate(); // 重新设置默认日期
-
-      // 重置输入框边框颜色
-      document.getElementById('title').style.borderColor = '';
+      showMessage('Task created successfully', 'success');
+      resetForm();
     } else {
       if (response.status === 401) {
-        showMessage('⚠ 授权已过期，正在跳转到授权页面...', 'error');
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
+        showMessage('Authorization expired. Redirecting...', 'error');
+        setTimeout(() => window.location.href = '/', 2000);
       } else {
-        showMessage('✗ ' + (data.message || '创建任务失败，请稍后重试'), 'error');
+        showMessage(data.message || 'Failed to create task', 'error');
       }
     }
   } catch (error) {
-    console.error('提交失败:', error);
-    showMessage('✗ 网络错误，请检查连接后重试', 'error');
+    console.error('Submission failed:', error);
+    showMessage('Network error. Please try again', 'error');
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = originalHTML;
+    elements.submitBtn.disabled = false;
+    elements.submitBtn.innerHTML = originalHTML;
   }
-});
-
-// 重新授权按钮
-document.getElementById('reauthBtn').addEventListener('click', async () => {
-  if (confirm('确定要重新授权吗？这将清除当前的授权信息。')) {
-    try {
-      const response = await fetch('/api/reauth', {
-        method: 'POST'
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        showMessage('正在跳转到授权页面...', 'success');
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 1000);
-      }
-    } catch (error) {
-      console.error('重新授权失败:', error);
-      showMessage('操作失败，请稍后重试', 'error');
-    }
-  }
-});
-
-// 添加键盘快捷键支持
-document.addEventListener('keydown', (e) => {
-  // Ctrl/Cmd + Enter 提交表单
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    document.getElementById('taskForm').dispatchEvent(new Event('submit'));
-  }
-});
-
-// 检查URL参数，显示授权成功消息
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get('authorized') === 'true') {
-  showMessage('✓ 授权成功！现在可以提交任务了', 'success');
-  // 清除URL参数
-  window.history.replaceState({}, document.title, window.location.pathname);
 }
 
-// 添加旋转动画样式
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
+/**
+ * Reset form to initial state
+ */
+function resetForm() {
+  if (elements.taskForm) {
+    elements.taskForm.reset();
+    setDefaultDate();
+  }
+}
+
+/**
+ * Handle re-authorization
+ */
+async function handleReauth() {
+  if (!confirm('Clear current authorization and re-authorize?')) {
+    return;
   }
 
-  #taskForm {
-    transition: transform 0.2s ease;
-  }
-`;
-document.head.appendChild(style);
+  try {
+    const response = await fetch(CONFIG.API.REAUTH, { method: 'POST' });
+    const data = await response.json();
 
-// 页面加载时初始化
-window.addEventListener('DOMContentLoaded', () => {
+    if (data.success) {
+      window.location.href = '/';
+    }
+  } catch (error) {
+    console.error('Re-authorization failed:', error);
+    showMessage('Operation failed', 'error');
+  }
+}
+
+/**
+ * Handle keyboard shortcuts
+ */
+function handleKeyboard(event) {
+  // Ctrl/Cmd + Enter to submit
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault();
+    if (elements.taskForm) {
+      elements.taskForm.dispatchEvent(new Event('submit'));
+    }
+  }
+}
+
+/**
+ * Check for authorization success message
+ */
+function checkAuthSuccess() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('authorized') === 'true') {
+    showMessage('Authorization successful', 'success');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
+/**
+ * Initialize application
+ */
+function init() {
+  // Check authorization status
   checkAuthStatus();
+
+  // Set default date
   setDefaultDate();
-  setupInputValidation();
 
-  // 添加淡入动画
-  document.querySelector('.form-card').style.animation = 'fadeInUp 0.6s ease-out';
-});
+  // Check for success message
+  checkAuthSuccess();
 
-// 添加表单字段的焦点效果
-document.querySelectorAll('input, select, textarea').forEach(element => {
-  element.addEventListener('focus', function() {
-    this.parentElement.style.transform = 'translateX(2px)';
-  });
+  // Event listeners
+  if (elements.taskForm) {
+    elements.taskForm.addEventListener('submit', handleSubmit);
+  }
 
-  element.addEventListener('blur', function() {
-    this.parentElement.style.transform = 'translateX(0)';
-  });
-});
+  if (elements.reauthBtn) {
+    elements.reauthBtn.addEventListener('click', handleReauth);
+  }
+
+  document.addEventListener('keydown', handleKeyboard);
+}
+
+// Start application when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
