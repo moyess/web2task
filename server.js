@@ -137,11 +137,12 @@ app.post('/api/create-task', async (req, res) => {
 
     // 如果有排期，添加到任务数据
     if (dueDate) {
-      // 将日期格式转换为滴答清单需要的格式（ISO 8601）
-      const date = new Date(dueDate);
-      date.setHours(23, 59, 59, 999); // 设置为当天结束时间
-      taskData.dueDate = date.toISOString();
+      // 将日期格式转换为滴答清单需要的格式
+      // 滴答清单需要使用 "YYYY-MM-DD" 格式的字符串
+      taskData.dueDate = dueDate; // 直接使用前端传来的日期格式
     }
+
+    console.log('创建任务数据:', JSON.stringify(taskData, null, 2));
 
     // 调用滴答清单API创建任务
     const response = await axios.post('https://api.dida365.com/open/v1/task', taskData, {
@@ -150,6 +151,8 @@ app.post('/api/create-task', async (req, res) => {
         'Content-Type': 'application/json'
       }
     });
+
+    console.log('API响应:', JSON.stringify(response.data, null, 2));
 
     if (response.data.id) {
       res.json({

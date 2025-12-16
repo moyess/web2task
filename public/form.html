@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="提交任务到滴答清单 - 团队协作工具">
   <title>提交任务 - 滴答清单协作</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -10,9 +11,9 @@
   <div class="container">
     <div class="form-card">
       <div class="header">
-        <h1>提交工作任务</h1>
-        <button id="reauthBtn" class="reauth-btn" title="重新授权">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <h1>📝 提交工作任务</h1>
+        <button id="reauthBtn" class="reauth-btn" title="重新授权" aria-label="重新授权">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="23 4 23 10 17 10"></polyline>
             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
           </svg>
@@ -20,14 +21,19 @@
       </div>
 
       <div id="authWarning" class="warning" style="display: none;">
-        <p>未检测到授权信息，请先完成授权</p>
-        <a href="/" class="link-button">前往授权</a>
+        <p>⚠️ 未检测到授权信息，请先完成授权</p>
+        <a href="/" class="link-button">前往授权页面</a>
       </div>
 
       <form id="taskForm">
         <div class="form-group">
           <label for="title">
-            任务名称 <span class="required">*</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            任务名称
+            <span class="required">*</span>
           </label>
           <input
             type="text"
@@ -35,21 +41,37 @@
             name="title"
             placeholder="例如：UEBA增加因私查询功能"
             required
+            autocomplete="off"
           >
         </div>
 
         <div class="form-group">
-          <label for="priority">优先级</label>
+          <label for="priority">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            优先级
+          </label>
           <select id="priority" name="priority">
             <option value="0">无优先级</option>
-            <option value="1">低</option>
-            <option value="3">中</option>
-            <option value="5" selected>高</option>
+            <option value="1">🟢 低优先级</option>
+            <option value="3">🟡 中优先级</option>
+            <option value="5" selected>🔴 高优先级</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="dueDate">排期日期</label>
+          <label for="dueDate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            排期日期
+          </label>
           <input
             type="date"
             id="dueDate"
@@ -58,28 +80,36 @@
         </div>
 
         <div class="form-group">
-          <label for="content">任务描述</label>
+          <label for="content">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="17" y1="10" x2="3" y2="10"></line>
+              <line x1="21" y1="6" x2="3" y2="6"></line>
+              <line x1="21" y1="14" x2="3" y2="14"></line>
+              <line x1="17" y1="18" x2="3" y2="18"></line>
+            </svg>
+            任务描述
+          </label>
           <textarea
             id="content"
             name="content"
             rows="4"
-            placeholder="任务的详细描述（可选）"
+            placeholder="详细描述任务内容、要求和预期结果（可选）"
           ></textarea>
         </div>
 
         <button type="submit" class="submit-button" id="submitBtn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 11 12 14 22 4"></polyline>
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
           </svg>
-          提交任务
+          提交任务到滴答清单
         </button>
       </form>
 
       <div id="message" class="message"></div>
 
       <div class="footer-info">
-        <p>提交的任务将自动添加到滴答清单中</p>
+        <p>提交的任务将自动添加到滴答清单</p>
       </div>
     </div>
   </div>
