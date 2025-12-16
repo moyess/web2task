@@ -1,9 +1,9 @@
 /**
- * Task Submission System
- * Dida365 Integration
+ * 滴答清单任务协作系统
+ * Task Submission System for Dida365
  */
 
-// Configuration
+// 配置
 const CONFIG = {
   API: {
     AUTH_STATUS: '/api/auth-status',
@@ -13,7 +13,7 @@ const CONFIG = {
   MESSAGE_DURATION: 5000
 };
 
-// DOM Elements
+// DOM 元素
 const elements = {
   authWarning: document.getElementById('authWarning'),
   taskForm: document.getElementById('taskForm'),
@@ -27,7 +27,7 @@ const elements = {
 };
 
 /**
- * Check authorization status
+ * 检查授权状态
  */
 async function checkAuthStatus() {
   try {
@@ -35,24 +35,24 @@ async function checkAuthStatus() {
     const data = await response.json();
 
     if (!data.authorized && elements.authWarning) {
-      elements.authWarning.style.display = 'block';
+      elements.authWarning.style.display = 'flex';
       if (elements.taskForm) {
         elements.taskForm.style.display = 'none';
       }
     }
   } catch (error) {
-    console.error('Authorization check failed:', error);
+    console.error('检查授权状态失败:', error);
   }
 }
 
 /**
- * Display message to user
+ * 显示消息提示
  */
 function showMessage(text, type = 'success') {
   if (!elements.messageBox) return;
 
   elements.messageBox.textContent = text;
-  elements.messageBox.className = `message-box ${type} show`;
+  elements.messageBox.className = `message-toast ${type} show`;
 
   setTimeout(() => {
     elements.messageBox.classList.remove('show');
@@ -60,7 +60,7 @@ function showMessage(text, type = 'success') {
 }
 
 /**
- * Set default date to today
+ * 设置默认日期为今天
  */
 function setDefaultDate() {
   if (!elements.dueDate) return;
@@ -74,7 +74,7 @@ function setDefaultDate() {
 }
 
 /**
- * Handle form submission
+ * 处理表单提交
  */
 async function handleSubmit(event) {
   event.preventDefault();
@@ -83,7 +83,7 @@ async function handleSubmit(event) {
 
   const originalHTML = elements.submitBtn.innerHTML;
   elements.submitBtn.disabled = true;
-  elements.submitBtn.innerHTML = '<span>Submitting...</span>';
+  elements.submitBtn.innerHTML = '<span>提交中...</span>';
 
   const formData = {
     title: elements.title.value.trim(),
@@ -102,19 +102,19 @@ async function handleSubmit(event) {
     const data = await response.json();
 
     if (data.success) {
-      showMessage('Task created successfully', 'success');
+      showMessage('任务创建成功，已同步至滴答清单', 'success');
       resetForm();
     } else {
       if (response.status === 401) {
-        showMessage('Authorization expired. Redirecting...', 'error');
+        showMessage('授权已过期，正在跳转...', 'error');
         setTimeout(() => window.location.href = '/', 2000);
       } else {
-        showMessage(data.message || 'Failed to create task', 'error');
+        showMessage(data.message || '创建任务失败，请重试', 'error');
       }
     }
   } catch (error) {
-    console.error('Submission failed:', error);
-    showMessage('Network error. Please try again', 'error');
+    console.error('提交失败:', error);
+    showMessage('网络错误，请检查连接', 'error');
   } finally {
     elements.submitBtn.disabled = false;
     elements.submitBtn.innerHTML = originalHTML;
@@ -122,7 +122,7 @@ async function handleSubmit(event) {
 }
 
 /**
- * Reset form to initial state
+ * 重置表单
  */
 function resetForm() {
   if (elements.taskForm) {
@@ -132,10 +132,10 @@ function resetForm() {
 }
 
 /**
- * Handle re-authorization
+ * 处理重新授权
  */
 async function handleReauth() {
-  if (!confirm('Clear current authorization and re-authorize?')) {
+  if (!confirm('确定要重新授权吗？当前授权信息将被清除。')) {
     return;
   }
 
@@ -147,16 +147,16 @@ async function handleReauth() {
       window.location.href = '/';
     }
   } catch (error) {
-    console.error('Re-authorization failed:', error);
-    showMessage('Operation failed', 'error');
+    console.error('重新授权失败:', error);
+    showMessage('操作失败，请稍后重试', 'error');
   }
 }
 
 /**
- * Handle keyboard shortcuts
+ * 处理键盘快捷键
  */
 function handleKeyboard(event) {
-  // Ctrl/Cmd + Enter to submit
+  // Ctrl/Cmd + Enter 提交表单
   if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
     event.preventDefault();
     if (elements.taskForm) {
@@ -166,30 +166,30 @@ function handleKeyboard(event) {
 }
 
 /**
- * Check for authorization success message
+ * 检查授权成功消息
  */
 function checkAuthSuccess() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('authorized') === 'true') {
-    showMessage('Authorization successful', 'success');
+    showMessage('授权成功！现在可以提交任务', 'success');
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 }
 
 /**
- * Initialize application
+ * 初始化应用
  */
 function init() {
-  // Check authorization status
+  // 检查授权状态
   checkAuthStatus();
 
-  // Set default date
+  // 设置默认日期
   setDefaultDate();
 
-  // Check for success message
+  // 检查授权成功消息
   checkAuthSuccess();
 
-  // Event listeners
+  // 绑定事件
   if (elements.taskForm) {
     elements.taskForm.addEventListener('submit', handleSubmit);
   }
@@ -201,7 +201,7 @@ function init() {
   document.addEventListener('keydown', handleKeyboard);
 }
 
-// Start application when DOM is ready
+// 启动应用
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {

@@ -4,45 +4,70 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="滴答清单协作任务提交系统">
-  <title>Task Submission · Dida365</title>
+  <title>任务提交 · 滴答清单</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="auth-container">
-    <div class="auth-content">
-      <div class="logo">
-        <div class="logo-icon"></div>
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand">
+          <div class="brand-icon"></div>
+          <h1 class="brand-title">任务协作系统</h1>
+        </div>
+        <div class="brand-subtitle">滴答清单集成</div>
       </div>
 
-      <h1 class="auth-title">Task Collaboration</h1>
-      <p class="auth-subtitle">Dida365 Integration System</p>
+      <div class="auth-content">
+        <div class="auth-info-grid">
+          <div class="info-card">
+            <div class="info-label">状态</div>
+            <div class="info-value">待授权</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">安全</div>
+            <div class="info-value">OAuth 2.0</div>
+          </div>
+        </div>
 
-      <div class="auth-divider"></div>
+        <div class="steps-container">
+          <h3 class="steps-title">授权流程</h3>
+          <div class="steps">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <div class="step-title">点击授权</div>
+                <div class="step-desc">开始OAuth认证流程</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <div class="step-title">登录账户</div>
+                <div class="step-desc">使用滴答清单账号登录</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <div class="step-title">授予权限</div>
+                <div class="step-desc">允许访问您的任务列表</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <div class="auth-steps">
-        <div class="step">
-          <span class="step-number">01</span>
-          <span class="step-text">Click authorization button</span>
-        </div>
-        <div class="step">
-          <span class="step-number">02</span>
-          <span class="step-text">Login to Dida365 account</span>
-        </div>
-        <div class="step">
-          <span class="step-number">03</span>
-          <span class="step-text">Grant access permission</span>
-        </div>
+        <a href="/auth" class="primary-button">
+          <span>开始授权</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
       </div>
-
-      <a href="/auth" class="auth-button">
-        <span>Begin Authorization</span>
-        <span class="button-arrow">→</span>
-      </a>
-
-      <p class="auth-note">Secured by OAuth 2.0 protocol</p>
     </div>
   </div>
 </body>
